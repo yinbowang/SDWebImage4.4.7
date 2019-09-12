@@ -15,6 +15,7 @@
 		1120E38C2329DFA1002B6F2F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1120E38B2329DFA1002B6F2F /* main.m */; };
 		1120E3962329DFA1002B6F2F /* SDWebImage4_4_7Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1120E3952329DFA1002B6F2F /* SDWebImage4_4_7Tests.m */; };
 		1120E3A12329DFA1002B6F2F /* SDWebImage4_4_7UITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1120E3A02329DFA1002B6F2F /* SDWebImage4_4_7UITests.m */; };
+		50716DABE6D98A4AC4B00E43 /* libPods-SDWebImage4.4.7.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 794EB7C16316891F27FFE27F /* libPods-SDWebImage4.4.7.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,9 @@
 		1120E39C2329DFA1002B6F2F /* SDWebImage4.4.7UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SDWebImage4.4.7UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1120E3A02329DFA1002B6F2F /* SDWebImage4_4_7UITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDWebImage4_4_7UITests.m; sourceTree = "<group>"; };
 		1120E3A22329DFA1002B6F2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		794EB7C16316891F27FFE27F /* libPods-SDWebImage4.4.7.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImage4.4.7.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		83677B99458737D8FD60F095 /* Pods-SDWebImage4.4.7.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImage4.4.7.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImage4.4.7/Pods-SDWebImage4.4.7.debug.xcconfig"; sourceTree = "<group>"; };
+		B215D2797159E4A66041C30F /* Pods-SDWebImage4.4.7.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImage4.4.7.release.xcconfig"; path = "Target Support Files/Pods-SDWebImage4.4.7/Pods-SDWebImage4.4.7.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50716DABE6D98A4AC4B00E43 /* libPods-SDWebImage4.4.7.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,8 @@
 				1120E3942329DFA1002B6F2F /* SDWebImage4.4.7Tests */,
 				1120E39F2329DFA1002B6F2F /* SDWebImage4.4.7UITests */,
 				1120E37A2329DFA0002B6F2F /* Products */,
+				4CC0195C38D669CEDCD63FD2 /* Pods */,
+				2A3E39450DB352BDE47D4BB0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,6 +139,24 @@
 			path = SDWebImage4.4.7UITests;
 			sourceTree = "<group>";
 		};
+		2A3E39450DB352BDE47D4BB0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				794EB7C16316891F27FFE27F /* libPods-SDWebImage4.4.7.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4CC0195C38D669CEDCD63FD2 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				83677B99458737D8FD60F095 /* Pods-SDWebImage4.4.7.debug.xcconfig */,
+				B215D2797159E4A66041C30F /* Pods-SDWebImage4.4.7.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,6 +164,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1120E3A52329DFA1002B6F2F /* Build configuration list for PBXNativeTarget "SDWebImage4.4.7" */;
 			buildPhases = (
+				370964FC8F8BB0CC82BCD981 /* [CP] Check Pods Manifest.lock */,
 				1120E3752329DFA0002B6F2F /* Sources */,
 				1120E3762329DFA0002B6F2F /* Frameworks */,
 				1120E3772329DFA0002B6F2F /* Resources */,
@@ -256,6 +282,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		370964FC8F8BB0CC82BCD981 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SDWebImage4.4.7-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1120E3752329DFA0002B6F2F /* Sources */ = {
@@ -433,10 +484,12 @@
 		};
 		1120E3A62329DFA1002B6F2F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 83677B99458737D8FD60F095 /* Pods-SDWebImage4.4.7.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = SDWebImage4.4.7/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -449,10 +502,12 @@
 		};
 		1120E3A72329DFA1002B6F2F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B215D2797159E4A66041C30F /* Pods-SDWebImage4.4.7.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = SDWebImage4.4.7/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
