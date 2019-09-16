@@ -20,15 +20,18 @@
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     UIImageView *imageView = [[UIImageView alloc]init];
-    imageView.backgroundColor = [UIColor greenColor];
+    imageView.backgroundColor = [UIColor whiteColor];
     imageView.frame = self.view.bounds;
     imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:imageView];
     
-    NSString *url = @"http://img4.cache.netease.com/photo/0001/2010-04-17/64EFS71V05RQ0001.jpg";
-    [imageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:[UIImage imageNamed:@"placeHolder.jpeg"] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+    NSString *urlString = @"http://img4.cache.netease.com/photo/0001/2010-04-17/64EFS71V05RQ0001.jpg";
+    NSURL *url = [NSURL URLWithString:urlString];
+    UIImage *placeHoder = [UIImage imageNamed:@"placeHolder.jpeg"];
+    
+    [imageView sd_setImageWithURL:url placeholderImage:placeHoder options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         
-    } completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         
     }];
     
