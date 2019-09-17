@@ -42,9 +42,22 @@ static char TAG_ACTIVITY_SHOW;
 }
 
 - (void)sd_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletionBlock)completedBlock {
+ //移除UIImageView当前绑定的操作.当TableView的cell包含的UIImageView被重用的时候首先执行这一行代码,保证这个ImageView的下载和缓存组合操作都被取消
     [self sd_cancelCurrentImageLoad];
+    
+    //将 url作为属性绑定到ImageView上,用static char imageURLKey作key
     objc_setAssociatedObject(self, &imageURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
+    /*options & SDWebImageDelayPlaceholder这是一个位运算的与操作,!(options & SDWebImageDelayPlaceholder)的意思就是options参数不是SDWebImageDelayPlaceholder,就执行以下操作
+     
+     #define dispatch_main_async_safe(block)\
+     if ([NSThread isMainThread]) {\
+     block();\
+     } else {\
+     dispatch_async(dispatch_get_main_queue(), block);\
+     }
+     */
+//这是一个宏定义,因为图像的绘制只能在主线程完成,所以dispatch_main_sync_safe就是为了保证block在主线程中执行
     if (!(options & SDWebImageDelayPlaceholder)) {
         dispatch_main_async_safe(^{
             self.image = placeholder;
@@ -54,25 +67,37 @@ static char TAG_ACTIVITY_SHOW;
     if (url) {
 
         // check if activityView is enabled or not
+   //检查是否通过`setShowActivityIndicatorView:`方法设置了显示正在加载指示器。如果设置了，使用`addActivityIndicator`方法向self添加指示器
         if ([self showActivityIndicatorView]) {
             [self addActivityIndicator];
         }
 
         __weak __typeof(self)wself = self;
+      //下载的核心方法，SDWebImageManager管理着SDImageCache和SDWebImageDownloader，缓存类和下载类
         id <SDWebImageOperation> operation = [SDWebImageManager.sharedManager downloadImageWithURL:url options:options progress:progressBlock completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+            //移除加载指示器
             [wself removeActivityIndicator];
             if (!wself) return;
             dispatch_main_sync_safe(^{
                 if (!wself) return;
+            /*SDWebImageAvoidAutoSetImage,默认情况下图片会在下载完毕后自动添加给imageView,但是有些时候我们想在设置图片之前加一些图片的处理,就要下载成功后去手动设置图片了,不会执行`wself.image = image;`,而是直接执行完成回调，有用户自己决定如何处理。
+                 */
                 if (image && (options & SDWebImageAvoidAutoSetImage) && completedBlock)
                 {
                     completedBlock(image, error, cacheType, url);
                     return;
                 }
+                /*
+                  如果后两个条件中至少有一个不满足，那么就直接将image赋给当前的imageView
+                  ，并调用setNeedsLayout
+                  */
                 else if (image) {
                     wself.image = image;
                     [wself setNeedsLayout];
                 } else {
+                    /*
+        image为空，并且设置了延迟设置占位图，会将占位图设置为最终的image，，并将其标记为需要重新布局。
+                     */
                     if ((options & SDWebImageDelayPlaceholder)) {
                         wself.image = placeholder;
                         [wself setNeedsLayout];
@@ -83,8 +108,10 @@ static char TAG_ACTIVITY_SHOW;
                 }
             });
         }];
+        // 为UIImageView绑定新的操作,并且把ImageView当前的操作cancel了
         [self sd_setImageLoadOperation:operation forKey:@"UIImageViewImageLoad"];
     } else {
+         // 判断url不存在，移除加载指示器，执行完成回调，传递错误信息。
         dispatch_main_async_safe(^{
             [self removeActivityIndicator];
             if (completedBlock) {
