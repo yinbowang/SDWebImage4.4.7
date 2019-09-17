@@ -1,2 +1,2 @@
-# SDWebImage4.4.7
-SDWebImage4.4.7版本源码解读
+# SDWebImage3.8.0
+SDWebImage3.8.0版本源码解读
