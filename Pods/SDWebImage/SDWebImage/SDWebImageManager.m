@@ -17,6 +17,40 @@
 
 @end
 
+
+
+@implementation SDWebImageCombinedOperation
+
+- (void)setCancelBlock:(SDWebImageNoParamsBlock)cancelBlock {
+    // check if the operation is already cancelled, then we just call the cancelBlock
+    if (self.isCancelled) {
+        if (cancelBlock) {
+            cancelBlock();
+        }
+        _cancelBlock = nil; // don't forget to nil the cancelBlock, otherwise we will get crashes
+    } else {
+        _cancelBlock = [cancelBlock copy];
+    }
+}
+
+- (void)cancel {
+    self.cancelled = YES;
+    if (self.cacheOperation) {
+        [self.cacheOperation cancel];
+        self.cacheOperation = nil;
+    }
+    if (self.cancelBlock) {
+        self.cancelBlock();
+        
+        // TODO: this is a temporary fix to #809.
+        // Until we can figure the exact cause of the crash, going with the ivar instead of the setter
+        //        self.cancelBlock = nil;
+        _cancelBlock = nil;
+    }
+}
+
+@end
+
 @interface SDWebImageManager ()
 
 @property (strong, nonatomic, readwrite) SDImageCache *imageCache;
@@ -133,11 +167,13 @@
 
     // Very common mistake is to send the URL using NSString object instead of NSURL. For some strange reason, XCode won't
     // throw any warning for this type mismatch. Here we failsafe this error by allowing URLs to be passed as NSString.
+    //防止开发者把传入NSString类型的url,如果url的类型是NSString就给转换成NSURL类型
     if ([url isKindOfClass:NSString.class]) {
         url = [NSURL URLWithString:(NSString *)url];
     }
 
     // Prevents app crashing on argument type error like sending NSNull instead of NSURL
+    //如果转换NSURL失败,就把传入的url置为nil下载停止
     if (![url isKindOfClass:NSURL.class]) {
         url = nil;
     }
@@ -146,10 +182,13 @@
     __weak SDWebImageCombinedOperation *weakOperation = operation;
 
     BOOL isFailedUrl = NO;
+    //创建一个互斥锁防止现有的别的线程修改failedURLs
+    //判断这个url是否是fail过的,如果url failed过的那么isFailedUrl就是true.
     @synchronized (self.failedURLs) {
         isFailedUrl = [self.failedURLs containsObject:url];
     }
 
+    //如果url是空，或者isFailedUrl为yes意思就是下载失败的url，并且options不是SDWebImageRetryFailed的话就直接回调completedBlock失败了，SDWebImageRetryFailed是即使是下载失败的url，还是会继续尝试下载
     if (url.absoluteString.length == 0 || (!(options & SDWebImageRetryFailed) && isFailedUrl)) {
         dispatch_main_sync_safe(^{
             NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorFileDoesNotExist userInfo:nil];
@@ -158,9 +197,11 @@
         return operation;
     }
 
+    //把operation加入到self.runningOperations的数组里面,并创建一个互斥线程锁来保护这个操作
     @synchronized (self.runningOperations) {
         [self.runningOperations addObject:operation];
     }
+    //获取image的url对应的key
     NSString *key = [self cacheKeyForURL:url];
 
     operation.cacheOperation = [self.imageCache queryDiskCacheForKey:key done:^(UIImage *image, SDImageCacheType cacheType) {
@@ -335,38 +376,6 @@
 
 @end
 
-
-@implementation SDWebImageCombinedOperation
-
-- (void)setCancelBlock:(SDWebImageNoParamsBlock)cancelBlock {
-    // check if the operation is already cancelled, then we just call the cancelBlock
-    if (self.isCancelled) {
-        if (cancelBlock) {
-            cancelBlock();
-        }
-        _cancelBlock = nil; // don't forget to nil the cancelBlock, otherwise we will get crashes
-    } else {
-        _cancelBlock = [cancelBlock copy];
-    }
-}
-
-- (void)cancel {
-    self.cancelled = YES;
-    if (self.cacheOperation) {
-        [self.cacheOperation cancel];
-        self.cacheOperation = nil;
-    }
-    if (self.cancelBlock) {
-        self.cancelBlock();
-        
-        // TODO: this is a temporary fix to #809.
-        // Until we can figure the exact cause of the crash, going with the ivar instead of the setter
-//        self.cancelBlock = nil;
-        _cancelBlock = nil;
-    }
-}
-
-@end
 
 
 @implementation SDWebImageManager (Deprecated)
