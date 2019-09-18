@@ -28,6 +28,7 @@
 
 @implementation SDWebImageManager
 
+//SDWebImageManager是一个单例
 + (id)sharedManager {
     static dispatch_once_t once;
     static id instance;
@@ -37,12 +38,14 @@
     return instance;
 }
 
+
 - (instancetype)init {
     SDImageCache *cache = [SDImageCache sharedImageCache];
     SDWebImageDownloader *downloader = [SDWebImageDownloader sharedDownloader];
     return [self initWithCache:cache downloader:downloader];
 }
 
+//init方法里初始化SDImageCache和SDWebImageDownloader
 - (instancetype)initWithCache:(SDImageCache *)cache downloader:(SDWebImageDownloader *)downloader {
     if ((self = [super init])) {
         _imageCache = cache;
@@ -53,6 +56,8 @@
     return self;
 }
 
+//如果检测到cacheKeyFilter不为空的时候,利用cacheKeyFilter来生成一个key
+//如果为空,那么直接返回URL的string内容,当做key.
 - (NSString *)cacheKeyForURL:(NSURL *)url {
     if (!url) {
         return @"";
@@ -66,16 +71,21 @@
 }
 
 - (BOOL)cachedImageExistsForURL:(NSURL *)url {
+    //调用上面的方法取到image的url对应的key
     NSString *key = [self cacheKeyForURL:url];
+    //去内存查找图片
     if ([self.imageCache imageFromMemoryCacheForKey:key] != nil) return YES;
+    //如果内存没有图片就去硬盘查找图片
     return [self.imageCache diskImageExistsWithKey:key];
 }
 
+// 检测硬盘里是否缓存了图片
 - (BOOL)diskImageExistsForURL:(NSURL *)url {
     NSString *key = [self cacheKeyForURL:url];
     return [self.imageCache diskImageExistsWithKey:key];
 }
 
+//缓存里是否有图片
 - (void)cachedImageExistsForURL:(NSURL *)url
                      completion:(SDWebImageCheckCacheCompletionBlock)completionBlock {
     NSString *key = [self cacheKeyForURL:url];
@@ -100,6 +110,7 @@
     }];
 }
 
+//磁盘里是否有图片
 - (void)diskImageExistsForURL:(NSURL *)url
                    completion:(SDWebImageCheckCacheCompletionBlock)completionBlock {
     NSString *key = [self cacheKeyForURL:url];
@@ -112,12 +123,13 @@
     }];
 }
 
+//通过url建立一个operation用来下载图片.
 - (id <SDWebImageOperation>)downloadImageWithURL:(NSURL *)url
                                          options:(SDWebImageOptions)options
                                         progress:(SDWebImageDownloaderProgressBlock)progressBlock
                                        completed:(SDWebImageCompletionWithFinishedBlock)completedBlock {
     // Invoking this method without a completedBlock is pointless
-    NSAssert(completedBlock != nil, @"If you mean to prefetch the image, use -[SDWebImagePrefetcher prefetchURLs] instead");
+                                                                                                                                                                                                                                                                                                                                                                                                                            NSAssert(completedBlock != nil, @"If you mean to prefetch the image, use -[SDWebImagePrefetcher prefetchURLs] instead");
 
     // Very common mistake is to send the URL using NSString object instead of NSURL. For some strange reason, XCode won't
     // throw any warning for this type mismatch. Here we failsafe this error by allowing URLs to be passed as NSString.
