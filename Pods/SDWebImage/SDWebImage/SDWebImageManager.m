@@ -204,6 +204,7 @@
     //获取image的url对应的key
     NSString *key = [self cacheKeyForURL:url];
 
+    //去磁盘中异步查找图片
     operation.cacheOperation = [self.imageCache queryDiskCacheForKey:key done:^(UIImage *image, SDImageCacheType cacheType) {
         if (operation.isCancelled) {
             @synchronized (self.runningOperations) {
@@ -351,6 +352,7 @@
     return operation;
 }
 
+//将图片保存到磁盘中
 - (void)saveImageToCache:(UIImage *)image forURL:(NSURL *)url {
     if (image && url) {
         NSString *key = [self cacheKeyForURL:url];
@@ -358,6 +360,7 @@
     }
 }
 
+//取消所有的任务
 - (void)cancelAll {
     @synchronized (self.runningOperations) {
         NSArray *copiedOperations = [self.runningOperations copy];
@@ -366,6 +369,7 @@
     }
 }
 
+//是否有在运行的任务
 - (BOOL)isRunning {
     BOOL isRunning = NO;
     @synchronized(self.runningOperations) {

@@ -58,9 +58,11 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
 
 @interface SDImageCache ()
 
+//NSCache的使用很方便，提供了类似可变字典的使用方式，但它比可变字典更适用于实现缓存，最重要的原因为NSCache是线程安全的，使用NSMutableDictionary自定义实现缓存时需要考虑加锁和释放锁，NSCache已经帮我们做好了这一步。其次，在内存不足时NSCache会自动释放存储的对象，不需要手动干预，如果是自定义实现需要监听内存状态然后做进一步的删除对象的操作。还有一点就是NSCache的键key不会被复制，所以key不需要实现NSCopying协议。上面讲解的三点就是NSCache相比于NSMutableDictionary实现缓存功能的优点，在需要实现缓存时应当优先考虑使用NSCache。
 @property (strong, nonatomic) NSCache *memCache;
 @property (strong, nonatomic) NSString *diskCachePath;
 @property (strong, nonatomic) NSMutableArray *customPaths;
+//_ioQueue = dispatch_queue_create("com.hackemist.SDWebImageCache", DISPATCH_QUEUE_SERIAL);创建一个串行的队列
 @property (SDDispatchQueueSetterSementics, nonatomic) dispatch_queue_t ioQueue;
 
 @end
@@ -385,6 +387,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     return SDScaledImageForKey(key, image);
 }
 
+//根据图片的key,异步查询磁盘缓存的方法
 - (NSOperation *)queryDiskCacheForKey:(NSString *)key done:(SDWebImageQueryCompletedBlock)doneBlock {
     if (!doneBlock) {
         return nil;
@@ -396,25 +399,34 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     }
 
     // First check the in-memory cache...
+    //首先查看内存缓存,如果查找到,则直接调用doneBlock并返回
     UIImage *image = [self imageFromMemoryCacheForKey:key];
     if (image) {
         doneBlock(image, SDImageCacheTypeMemory);
         return nil;
     }
 
+    //如果内存中没有,则在磁盘中查找,如果找到,则将其放到内存缓存中,并调用doneBlock回调
+    //这里创建了一个NSOperation返回去，给每个imageview绑定上，当imageview被复用的时候要取消当前的任务
+    
     NSOperation *operation = [NSOperation new];
+    //在ioQueue中串行处理所有磁盘缓存
     dispatch_async(self.ioQueue, ^{
+        //所以任务取消后就不会再查找了
         if (operation.isCancelled) {
             return;
         }
-
+        //创建自动释放池,内存及时释放
         @autoreleasepool {
+            //根据图片的url对应的key去磁盘缓存中查找图片
             UIImage *diskImage = [self diskImageForKey:key];
+            //如果可以在磁盘中查找到image,并且self.shouldCacheImagesInMemory = YES(默认是YES,if memory cache is enabled)就将image储存到内存缓存中
             if (diskImage && self.shouldCacheImagesInMemory) {
                 NSUInteger cost = SDCacheCostForImage(diskImage);
+                //self.memCache是NSCache创建的一个对象,
                 [self.memCache setObject:diskImage forKey:key cost:cost];
             }
-
+            //最后在主线程里面调用doneBlock返回
             dispatch_async(dispatch_get_main_queue(), ^{
                 doneBlock(diskImage, SDImageCacheTypeDisk);
             });
