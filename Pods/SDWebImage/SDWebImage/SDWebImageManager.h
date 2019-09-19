@@ -111,6 +111,14 @@ typedef NSString *(^SDWebImageCacheKeyFilterBlock)(NSURL *url);
  *
  * @return Return NO to prevent the downloading of the image on cache misses. If not implemented, YES is implied.
  */
+/**
+   *控制在缓存中找不到图像时应下载哪个图像。
+  *
+   * @param imageManager当前的`SDWebImageManager`
+   * @param imageURL要下载的图像的网址
+  *
+   * @return返回NO以防止在缓存未命中时下载图像。 如果未实施，则暗示为YES。
+  */
 - (BOOL)imageManager:(SDWebImageManager *)imageManager shouldDownloadImageForURL:(NSURL *)imageURL;
 
 /**
@@ -123,6 +131,17 @@ typedef NSString *(^SDWebImageCacheKeyFilterBlock)(NSURL *url);
  *
  * @return The transformed image object.
  */
+/**
+   *允许在下载后立即转换图像，然后将图像缓存在磁盘和内存上。
+   *注意：从全局队列调用此方法，以便不阻止主线程。
+  *
+   * @param imageManager当前的`SDWebImageManager`
+   * @param image要转换的图像
+   * @param imageURL要转换的图像的网址
+  *
+   * @return变换后的图像对象。
+  */
+
 - (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL;
 
 @end
