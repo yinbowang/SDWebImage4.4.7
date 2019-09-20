@@ -11,24 +11,30 @@
 #import "SDWebImageOperation.h"
 
 typedef NS_OPTIONS(NSUInteger, SDWebImageDownloaderOptions) {
+    //这个属于默认的使用模式了,前往下载,返回进度block信息,完成时调用completedBlock
     SDWebImageDownloaderLowPriority = 1 << 0,
+    
+//渐进式下载,如果设置了这个选项,会在下载过程中,每次接收到一段返回数据就会调用一次完成回调,回调中的image参数为未下载完成的部分图像,可以实现将图片一点点显示出来的功能
     SDWebImageDownloaderProgressiveDownload = 1 << 1,
 
     /**
      * By default, request prevent the use of NSURLCache. With this flag, NSURLCache
      * is used with default policies.
      */
+    //通常情况下request阻止使用NSURLCache.这个选项会默认使用NSURLCache
     SDWebImageDownloaderUseNSURLCache = 1 << 2,
 
     /**
      * Call completion block with nil image/imageData if the image was read from NSURLCache
      * (to be combined with `SDWebImageDownloaderUseNSURLCache`).
+     如果从NSURLCache中读取图片,会在调用完成block的时候,传递空的image或者imageData
      */
 
     SDWebImageDownloaderIgnoreCachedResponse = 1 << 3,
     /**
      * In iOS 4+, continue the download of the image if the app goes to background. This is achieved by asking the system for
      * extra time in background to let the request finish. If the background task expires the operation will be cancelled.
+     系统为iOS 4+时候,如果应用进入后台,继续下载.这个选项是为了实现在后台申请额外的时间来完成请求.如果后台任务到期,操作也会被取消
      */
 
     SDWebImageDownloaderContinueInBackground = 1 << 4,
@@ -36,17 +42,21 @@ typedef NS_OPTIONS(NSUInteger, SDWebImageDownloaderOptions) {
     /**
      * Handles cookies stored in NSHTTPCookieStore by setting 
      * NSMutableURLRequest.HTTPShouldHandleCookies = YES;
+     通过设置 NSMutableURLRequest.HTTPShouldHandleCookies = YES的方式来处理存储在NSHTTPCookieStore的cookies
      */
+    
     SDWebImageDownloaderHandleCookies = 1 << 5,
 
     /**
      * Enable to allow untrusted SSL certificates.
      * Useful for testing purposes. Use with caution in production.
+     允许不受信任的SSL证书，在测试环境中很有用，在生产环境中要谨慎使用
      */
     SDWebImageDownloaderAllowInvalidSSLCertificates = 1 << 6,
 
     /**
      * Put the image in the high priority queue.
+     将图片下载放到高优先级队列中
      */
     SDWebImageDownloaderHighPriority = 1 << 7,
 };
