@@ -135,6 +135,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
                                                      name:UIApplicationDidReceiveMemoryWarningNotification
                                                    object:nil];
 
+        //应用在前台,双击 Home 键 ,终止应用 , UIApplicationWillTerminateNotification 调用
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(cleanDisk)
                                                      name:UIApplicationWillTerminateNotification

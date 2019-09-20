@@ -55,11 +55,13 @@ typedef void(^SDWebImageCalculateSizeBlock)(NSUInteger fileCount, NSUInteger tot
 /**
  * The maximum "total cost" of the in-memory image cache. The cost function is the number of pixels held in memory.
  */
+//内存缓存的最大值(图片像素)
 @property (assign, nonatomic) NSUInteger maxMemoryCost;
 
 /**
  * The maximum number of objects the cache should hold.
  */
+//内存缓存的最大数量(图片数量)
 @property (assign, nonatomic) NSUInteger maxMemoryCountLimit;
 
 /**
