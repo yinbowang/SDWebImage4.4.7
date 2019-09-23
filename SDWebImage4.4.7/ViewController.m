@@ -29,7 +29,7 @@
     NSURL *url = [NSURL URLWithString:urlString];
     UIImage *placeHoder = [UIImage imageNamed:@"placeHolder.jpeg"];
     
-    [imageView sd_setImageWithURL:url placeholderImage:placeHoder options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+    [imageView sd_setImageWithURL:url placeholderImage:placeHoder options:SDWebImageRefreshCached progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         
     } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         

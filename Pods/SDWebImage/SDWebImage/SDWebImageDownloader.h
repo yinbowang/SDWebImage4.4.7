@@ -90,19 +90,24 @@ typedef NSDictionary *(^SDWebImageDownloaderHeadersFilterBlock)(NSURL *url, NSDi
 /**
  * Decompressing images that are downloaded and cached can improve performance but can consume lot of memory.
  * Defaults to YES. Set this to NO if you are experiencing a crash due to excessive memory consumption.
+ 解压已经下载缓存起来的图片可以提高性能,但是会消耗大量的内存
+ 默认为YES显示比较高质量的图片,如果你遇到因内存消耗过多而造成崩溃的话可以设置为NO,
  */
 @property (assign, nonatomic) BOOL shouldDecompressImages;
 
+///下载队列最大的并发数,意思是队列中最多同时运行几条线程默认是6
 @property (assign, nonatomic) NSInteger maxConcurrentDownloads;
 
 /**
  * Shows the current amount of downloads that still need to be downloaded
+当前在下载队列的操作总数,只读(这是一个瞬间值,因为只要一个操作下载完成就会移除下载队列)
  */
 @property (readonly, nonatomic) NSUInteger currentDownloadCount;
 
 
 /**
  *  The timeout value (in seconds) for the download operation. Default: 15.0.
+ 下载操作的超时时间,默认是15s
  */
 @property (assign, nonatomic) NSTimeInterval downloadTimeout;
 
